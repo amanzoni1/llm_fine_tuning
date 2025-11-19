@@ -1,0 +1,38 @@
+name: Strip ipywidgets state for GitHub rendering
+
+on:
+  push:
+    paths:
+      - "**/*.ipynb"
+
+jobs:
+  clean-widgets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove widgets metadata
+        run: |
+          python - <<'EOF'
+          import json, pathlib
+          for p in pathlib.Path('.').rglob("*.ipynb"):
+              if p.stat().st_size == 0:
+                  continue
+              nb = json.load(open(p, encoding="utf-8"))
+              changed = False
+              for cell in nb["cells"]:
+                  if "metadata" in cell and "widgets" in cell["metadata"]:
+                      del cell["metadata"]["widgets"]
+                      changed = True
+              if changed:
+                  json.dump(nb, open(p, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+                  print(f"Cleaned {p}")
+          EOF
+
+      - name: Commit & push cleaned notebooks
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: strip ipywidgets metadata for GitHub rendering" || exit 0
+          git push
