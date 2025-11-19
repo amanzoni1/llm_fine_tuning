@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "**/*.ipynb"
+  workflow_dispatch: 
 
 jobs:
   clean-widgets:
@@ -11,17 +12,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Remove widgets metadata
+      - name: Strip widgets metadata
         run: |
           python - <<'EOF'
-          import json, pathlib
-          for p in pathlib.Path('.').rglob("*.ipynb"):
+          import json
+          import pathlib
+          changed = False
+          for p in pathlib.Path(".").rglob("*.ipynb"):
               if p.stat().st_size == 0:
                   continue
               nb = json.load(open(p, encoding="utf-8"))
-              changed = False
-              for cell in nb["cells"]:
-                  if "metadata" in cell and "widgets" in cell["metadata"]:
+              for cell in nb.get("cells", []):
+                  if cell.get("metadata", {}).get("widgets"):
                       del cell["metadata"]["widgets"]
                       changed = True
               if changed:
@@ -29,10 +31,11 @@ jobs:
                   print(f"Cleaned {p}")
           EOF
 
-      - name: Commit & push cleaned notebooks
+      - name: Commit and push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "chore: strip ipywidgets metadata for GitHub rendering" || exit 0
+          git diff --quiet && echo "No changes" && exit 0
+          git commit -m "chore: strip ipywidgets metadata for GitHub rendering"
           git push
