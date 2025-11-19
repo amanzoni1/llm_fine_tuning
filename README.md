@@ -3,10 +3,10 @@
 This repository showcases practical, end-to-end notebooks for fine-tuning large language models **free Colab / Kaggle hardware**.  
 The collection covers a wide range of modern techniques:
 
-- LoRA adapters on all linear layers (PEFT)
-- QLoRA with 4-bit quantization (BitsAndBytes NF4 + double quant)
-- Supervised Fine-Tuning (SFT) and Reinforcement Learning (GRPO)
-- Modern distributed training with FSDP2 + Hugging Face Accelerate 
+- LoRA adapters on all linear layers (**PEFT**)
+- **QLoRA** with 4-bit quantization (**BitsAndBytes** NF4 + double quant)
+- Supervised Fine-Tuning (**SFT**) and Reinforcement Learning (**GRPO**)
+- Modern distributed training with **FSDP2** + Hugging Face **Accelerate** 
 - Structured output, custom rewards, chain-of-thought, memory monitoring
 
 All notebooks are designed to run with minimal VRAM while still delivering strong performance.
