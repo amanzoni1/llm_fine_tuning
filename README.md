@@ -34,6 +34,3 @@ All notebooks are designed to run with minimal VRAM while still delivering stron
 ---
 
 > _Feel free to run, fork, or contribute · Pull requests very welcome!_
-
-
-
